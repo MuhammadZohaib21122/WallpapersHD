@@ -1,6 +1,8 @@
 package com.example.wallpaper_hd;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +17,8 @@ import java.util.List;
 
 public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperViewHolder>{
 
-    private Context context;
-    private List<WallpaperModel> wallpaperModelList;
+    private final Context context;
+    private final List<WallpaperModel> wallpaperModelList;
 
     public WallpaperAdapter(Context context, List<WallpaperModel> wallpaperModelList) {
         this.context = context;
@@ -31,8 +33,16 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(@NonNull WallpaperViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull WallpaperViewHolder holder,
+                                 @SuppressLint("RecyclerView") int position) {
         Glide.with(context).load(wallpaperModelList.get(position).getMediumUrl()).into(holder.imageView);
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(new Intent(context,FullScreenWallpaper.class)
+                        .putExtra("originalUrl", wallpaperModelList.get(position).getOriginalUrl()));
+            }
+        });
     }
 
     @Override
