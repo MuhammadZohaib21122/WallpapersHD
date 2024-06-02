@@ -3,10 +3,13 @@ package com.example.wallpaper_hd;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
 import android.app.WallpaperManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -65,5 +68,15 @@ public class FullScreenWallpaper extends AppCompatActivity {
         }
 
 
+    }
+
+    public void DownloadWallpaperEvent(View view) {
+
+        DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri uri = Uri.parse(originalUrl);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        downloadManager.enqueue(request);
+        Toast.makeText(this, "Downloading Start", Toast.LENGTH_SHORT).show();
     }
 }
