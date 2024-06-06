@@ -1,19 +1,24 @@
 package com.example.wallpaper_hd;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.android.volley.AuthFailureError;
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     Boolean isScrolling =false;
     int currentItems,totalItems,scrollOutItems;
+    String url = "https://api.pexels.com/v1/curated/?page=\"+pageNumber+\"&per_page=80";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void fetchWallpaper(){
 
-        StringRequest request = new StringRequest(Request.Method.GET, "https://api.pexels.com/v1/curated/?page="+pageNumber+"&per_page=80",
+        StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @SuppressLint("NotifyDataSetChanged")
                     @Override
@@ -165,5 +171,44 @@ public class MainActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(request);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId()==R.id.nav_search){
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            final EditText editText = new EditText(this);
+            editText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            alert.setMessage("Enter Category e.g, nature");
+            alert.setTitle("Search Wallpaper");
+            alert.setView(editText);
+
+            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String query = editText.getText().toString().toLowerCase();
+                    url ="https://api.pexels.com/v1/search/?page="+pageNumber+"&per_page=80&query="+query;
+                    wallpaperModelList.clear();
+                    fetchWallpaper();
+                }
+            });
+
+            alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            alert.show();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
